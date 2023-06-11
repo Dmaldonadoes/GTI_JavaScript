@@ -67,6 +67,35 @@ module.exports = class Logica {
         });
     }
 
+
+    insertarAsignatura(datos) {
+        var textoSQL = 
+        "insert into Asignatura values( $nombre, $codigoAsignatura );";
+        var valoresParaSQL = {
+            $nombre: datos.nombre,
+            $codigoAsignatura: datos.codigoAsignatura,
+        };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.run(textoSQL, valoresParaSQL, function (err) {
+                ( err ? rechazar(err) : resolver() )
+            });
+        });
+    }
+
+    insertarMatricula(datos) {
+        var textoSQL = 
+        "insert into Matricula values( $dni, $codigo );";
+        var valoresParaSQL = {
+            $dni: datos.dni,
+            $codigo: datos.codigo,
+        };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.run(textoSQL, valoresParaSQL, function (err) {
+                ( err ? rechazar(err) : resolver() )
+            });
+        });
+    }
+
 // .................................................................
 // dni:Texto
 //      -->
@@ -78,6 +107,47 @@ module.exports = class Logica {
     buscarPersonaConDNI(dni) {
         var textoSQL = "select * from Persona where dni=$dni";
         var valoresParaSQL = { $dni: dni };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.all(textoSQL, valoresParaSQL, (err, res) => {
+                ( err ? rechazar(err) : resolver(res) )
+            });
+        });
+    }
+
+
+    buscarAsignaturaConCodigo(codigoAsignatura) {
+        var textoSQL = "select * from Asignatura where codigoAsignatura=$codigoAsignatura";
+        var valoresParaSQL = { $codigoAsignatura: codigoAsignatura };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.all(textoSQL, valoresParaSQL, (err, res) => {
+                ( err ? rechazar(err) : resolver(res) )
+            });
+        });
+    }
+
+    buscarMatriculaConDNI(dni) {
+        var textoSQL = "select * from Matricula where dni=$dni";
+        var valoresParaSQL = { $dni: dni };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.all(textoSQL, valoresParaSQL, (err, res) => {
+                ( err ? rechazar(err) : resolver(res) )
+            });
+        });
+    }
+
+    buscarMatriculaConCodigoAsignatura(codigo) {
+        var textoSQL = "select * from Matricula where codigo=$codigo";
+        var valoresParaSQL = { $codigo: codigo };
+        return new Promise((resolver, rechazar) => {
+            this.laConexion.all(textoSQL, valoresParaSQL, (err, res) => {
+                ( err ? rechazar(err) : resolver(res) )
+            });
+        });
+    }
+
+    buscarAsignaturasMatriculadasConApellidos(apellidos) {
+        var textoSQL = "SELECT M.codigo FROM Matricula M JOIN Persona P ON M.dni = P.dni WHERE P.apellidos = $apellidos;";
+        var valoresParaSQL = { $apellidos: apellidos };
         return new Promise((resolver, rechazar) => {
             this.laConexion.all(textoSQL, valoresParaSQL, (err, res) => {
                 ( err ? rechazar(err) : resolver(res) )
